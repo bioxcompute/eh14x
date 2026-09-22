@@ -1,0 +1,23 @@
+[project]
+name = "biox"
+version = "0.1.0"
+description = "Client for the EH14 X API: read, score, place and design biological sequence"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+keywords = ["bioinformatics", "genomics", "eDNA", "18S", "variant", "foundation-model"]
+dependencies = []
+
+[project.optional-dependencies]
+evaluation = ["numpy>=1.24"]
+
+[project.urls]
+Homepage = "https://bioxcompute.com"
+Documentation = "https://bioxcompute.com/docs"
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["biox"]

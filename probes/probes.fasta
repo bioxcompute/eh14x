@@ -1,0 +1,16 @@
+>Trypanosoma_probe sleeping sickness | coverage 99% | background 0.113% | Tm 56.7C | GC 55% | candidate, not a validated assay
+GAATGAAGGAGGGTAGTTCGGG
+>Trichomonas_probe trichomoniasis | coverage 98% | background 0.048% | Tm 56.7C | GC 55% | candidate, not a validated assay
+CTGTCGATCAAGGGCGAGAGTA
+>Leishmania_probe leishmaniasis | coverage 85% | background 0.123% | Tm 56.7C | GC 55% | candidate, not a validated assay
+ACCGCACCAAGACGAACTACAG
+>Plasmodium_probe malaria | coverage 82% | background 0.008% | Tm 56.7C | GC 55% | candidate, not a validated assay
+CGTATTCGCGCAAGCGAGAAAG
+>Blastocystis_probe intestinal complaints | coverage 80% | background 0.013% | Tm 56.7C | GC 55% | candidate, not a validated assay
+CATGGCAGTGACGGGTAACGAA
+>Candida_probe candidiasis | coverage 78% | background 0.133% | Tm 58.6C | GC 59% | candidate, not a validated assay
+TTGCCCTTAGACGTTCTGGGCC
+>Entamoeba_probe amoebic dysentery | coverage 75% | background 0.123% | Tm 58.6C | GC 59% | candidate, not a validated assay
+GGAAGGGCACACAAGGAGTGGA
+>Naegleria_probe meningitis | coverage 72% | background 0.000% | Tm 56.7C | GC 55% | candidate, not a validated assay
+CCAGAGCGATTTAGCATGGGAC
