@@ -41,7 +41,12 @@ print(c.explain("chr17", 43092919, "G", "A"))
 print(c.design("Trypanosoma"))
 ```
 
-More in [`examples/`](examples/).
+More in [`examples/`](examples/). A set of basic checks that the model is
+reachable and behaving is in [`test/`](test/):
+
+```bash
+python test/test_eh14x.py
+```
 
 ## What it does
 
@@ -97,17 +102,14 @@ unnamed fraction turns on:
 Counting still wins, so counting is what the API serves for placement, and every
 answer says which method produced it.
 
-[`evaluation/novelty.py`](evaluation/novelty.py) is the code that produces that
-table. It takes three files: sequences from taxa the model saw, sequences from
-taxa held out of training, and a reference set with a group label per sequence.
-Run it against any model you like.
+Two choices behind those numbers move them more than the model does, so they are
+worth stating. Whole taxa are held out, never random rows. And the baseline
+compares against one centroid per group, not against the nearest single
+reference sequence: the nearest single sequence rewards a query that happens to
+resemble one odd record, and gives a large group more chances to win by being
+large.
 
-**The sequences themselves are not in this repository yet.** They come from
-SILVA and PR2, and we have not settled whether we may redistribute a subset, so
-we would rather ship nothing than ship it wrongly. Ask and we will send the
-exact set we measured on, or rebuild your own: hold out whole taxa, never random
-rows, and give the baseline one centroid per group rather than the nearest
-single sequence. Those two choices move the number more than the model does.
+The evaluation set is available on request.
 
 ## Dataset
 
@@ -119,6 +121,9 @@ The model reads four kinds of sequence:
 | coding regions | GENCODE |
 | reference genomes | RefSeq, one representative per species |
 | environmental DNA | 18S and 16S amplicon runs from the ENA, marine and sediment |
+
+Reference sequences come from [SILVA](https://www.arb-silva.de) (CC-BY 4.0) and
+[PR2](https://pr2-database.org) (MIT), used with attribution.
 
 The environmental part is the largest by count and carries no taxonomy at all,
 which is the point: a model trained only on named organisms has never seen the
