@@ -95,8 +95,19 @@ unnamed fraction turns on:
 | EH14 X | 0.656 | [0.589, 0.717] |
 
 Counting still wins, so counting is what the API serves for placement, and every
-answer says which method produced it. Reproduce it with
-[`evaluation/novelty.py`](evaluation/novelty.py).
+answer says which method produced it.
+
+[`evaluation/novelty.py`](evaluation/novelty.py) is the code that produces that
+table. It takes three files: sequences from taxa the model saw, sequences from
+taxa held out of training, and a reference set with a group label per sequence.
+Run it against any model you like.
+
+**The sequences themselves are not in this repository yet.** They come from
+SILVA and PR2, and we have not settled whether we may redistribute a subset, so
+we would rather ship nothing than ship it wrongly. Ask and we will send the
+exact set we measured on, or rebuild your own: hold out whole taxa, never random
+rows, and give the baseline one centroid per group rather than the nearest
+single sequence. Those two choices move the number more than the model does.
 
 ## Dataset
 

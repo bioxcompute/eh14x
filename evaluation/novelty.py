@@ -51,6 +51,7 @@ import os
 import sys
 
 import numpy as np
+from pathlib import Path
 
 
 def auc(labels: np.ndarray, scores: np.ndarray) -> float:
@@ -101,8 +102,20 @@ def score_biox(sequences: list[str]) -> list[float]:
     return uit
 
 
-def score_kmers(sequences: list[str], reference: list[str]) -> list[float]:
-    """The baseline: how close is this sequence's 4-mer profile to the references?"""
+def score_kmers(sequences: list[str], reference: list[str],
+                groups: list[str] | None = None) -> list[float]:
+    """The baseline: 4-mer profile against one centroid per reference group.
+
+    Per group and not per sequence, because that is what the API serves and a
+    published measurement that uses a different baseline than the running one
+    is worse than no published measurement. Taking the nearest single reference
+    instead of the nearest group centroid is a different method: it rewards a
+    query that happens to resemble one odd record, and it gives a large group
+    more chances to be the nearest simply by being large.
+
+    Without `groups` every reference is its own group, which is the degenerate
+    case and is flagged rather than silently allowed.
+    """
     from itertools import product
     woorden = {"".join(p): i for i, p in enumerate(product("ACGT", repeat=4))}
 
@@ -115,8 +128,20 @@ def score_kmers(sequences: list[str], reference: list[str]) -> list[float]:
         n = v.sum()
         return v / n if n else v
 
-    ref = np.stack([profiel(s) for s in reference])
+    if groups is None:
+        print("  warning: no groups given, so every reference is its own centroid. "
+              "That is not the baseline the API serves.", file=sys.stderr)
+        groups = [str(i) for i in range(len(reference))]
+
+    # Eén centroïde per groep, en pas daarna normaliseren: andersom weegt een
+    # groep met veel korte records zwaarder dan een met weinig lange.
+    per_groep: dict[str, list[np.ndarray]] = {}
+    for s, g in zip(reference, groups):
+        per_groep.setdefault(g, []).append(profiel(s))
+    namen = sorted(per_groep)
+    ref = np.stack([np.mean(per_groep[g], axis=0) for g in namen])
     ref = ref / (np.linalg.norm(ref, axis=1, keepdims=True) + 1e-9)
+
     uit = []
     for s in sequences:
         v = profiel(s)
@@ -154,6 +179,8 @@ if __name__ == "__main__":
     a.add_argument("--known", required=True, help="FASTA of sequences from taxa the model saw")
     a.add_argument("--novel", required=True, help="FASTA of sequences from held-out taxa")
     a.add_argument("--reference", help="FASTA of reference sequences, for the k-mer baseline")
+    a.add_argument("--groups", help="one group label per reference sequence, one per line. "
+                                    "Without this the baseline is not the one the API serves")
     a.add_argument("--length", type=int, default=300, help="crop every query to this length")
     n = a.parse_args()
 
@@ -164,7 +191,10 @@ if __name__ == "__main__":
     uit = {}
     if n.reference:
         ref = [s for s in lees_fasta(n.reference) if len(s) >= n.length]
-        uit["4-mer counting"] = run(known, novel, lambda q: score_kmers(q, ref))
+        grp = Path(n.groups).read_text().split() if n.groups else None
+        if grp and len(grp) != len(ref):
+            raise SystemExit(f"{len(grp)} group labels for {len(ref)} references")
+        uit["4-mer counting"] = run(known, novel, lambda q: score_kmers(q, ref, grp))
     if os.environ.get("BIOX_API_KEY"):
         uit["EH14 X"] = run(known, novel, score_biox)
     else:
