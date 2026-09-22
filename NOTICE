@@ -1,0 +1,9 @@
+EH14 X
+Copyright 2026 BioX
+
+This product includes software developed at BioX (https://bioxcompute.com).
+
+Licensed under the Apache License, Version 2.0. See LICENSE.
+
+The model is trained on public reference data and on environmental sequence
+read archives. See the Dataset section of README.md.

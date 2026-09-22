@@ -98,6 +98,29 @@ Counting still wins, so counting is what the API serves for placement, and every
 answer says which method produced it. Reproduce it with
 [`evaluation/novelty.py`](evaluation/novelty.py).
 
+## Dataset
+
+The model reads four kinds of sequence:
+
+| | source |
+|---|---|
+| human genome | GRCh38 and T2T-CHM13v2.0 |
+| coding regions | GENCODE |
+| reference genomes | RefSeq, one representative per species |
+| environmental DNA | 18S and 16S amplicon runs from the ENA, marine and sediment |
+
+The environmental part is the largest by count and carries no taxonomy at all,
+which is the point: a model trained only on named organisms has never seen the
+thing it is meant to recognise.
+
+Viruses that infect vertebrates are left out, along with toxin databases and
+functional annotations of pathogens. What a model has never read, it cannot
+write. The marker-gene corpus carries identity and not function.
+
+Whole taxa are held out of training for the evaluation, and the list comes from
+the same function that the evaluation uses to hold them out, so the two cannot
+drift apart.
+
 ## Reproducibility
 
 Every answer carries the release that produced it:
@@ -118,6 +141,20 @@ ships.
 - [/probes](https://bioxcompute.com/probes), the designed probes
 - [/log](https://bioxcompute.com/log), what we tried, including what failed
 
+## Citation
+
+```bibtex
+@software{eh14x,
+  title  = {EH14 X: a sequence model for the named and the unnamed},
+  author = {{BioX}},
+  year   = {2026},
+  url    = {https://bioxcompute.com}
+}
+```
+
+Please quote the release string that came with your answers, such as
+`EH14 X/1`, so the result can be reproduced against the same model.
+
 ## License
 
-Apache 2.0. See [LICENSE](LICENSE).
+Apache 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
