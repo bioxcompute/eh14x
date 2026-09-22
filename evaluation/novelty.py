@@ -31,15 +31,13 @@ occurs, compared against the reference groups. It is the dumbest thing that
 could work, which is exactly why it belongs here: a model is only worth its
 weights if it beats it.
 
-Results, measured 22 September 2026, on the same 300 sequences of 300 bases:
+Results, measured 22 September 2026, on 300 sequences of 300 bases:
 
     4-mer counting        0.774
     EH14 X                0.656   [0.589, 0.717]
-    Evo 2 (40B)           0.540   [0.470, 0.604]
 
-Evo 2's interval covers 0.5. Forty billion parameters do no better than chance
-here, and that is not a criticism of Evo - these sequences are in no database,
-so there is nothing to remember. Counting still beats both of us.
+Counting wins, so counting is what the API serves for placement, and every
+answer says which method produced it.
 
     python evaluation/novelty.py --help
 """
