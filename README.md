@@ -154,8 +154,9 @@ ships.
 
 - [bioxcompute.com](https://bioxcompute.com), the model
 - [/docs](https://bioxcompute.com/docs), API reference with curl for every call
-- [/probes](https://bioxcompute.com/probes), the designed probes
-- [/log](https://bioxcompute.com/log), what we tried, including what failed
+- [/models](https://bioxcompute.com/models), every measurement, read from the reports at the moment you ask
+- [/news](https://bioxcompute.com/news), the larger steps
+- [probes/](probes/), the designed probes, in this repository
 
 ## Citation
 
