@@ -94,10 +94,10 @@ interval, because an AUC without one invites reading noise as progress.
 On recognising a taxon the model has never seen, which is the question the
 unnamed fraction turns on:
 
-| | AUC | 95% interval |
+| on 300 bases | AUC | 95% interval |
 |---|---|---|
-| 4-mer counting | **0.774** | |
-| EH14 X | 0.656 | [0.589, 0.717] |
+| 4-mer counting | **0.776** | |
+| EH14 X | 0.753 | [0.722, 0.783] |
 
 Counting still wins, so counting is what the API serves for placement, and every
 answer says which method produced it.
