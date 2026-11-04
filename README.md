@@ -92,19 +92,36 @@ from memory and call it understanding. Every number carries a bootstrap
 interval, because an AUC without one invites reading noise as progress.
 
 On recognising a taxon the model has never seen, which is the question the
-unnamed fraction turns on:
+unnamed fraction turns on.
 
-| on 300 bases | AUC | 95% interval |
-|---|---|---|
-| 4-mer counting | **0.776** | |
-| EH14 X | 0.753 | [0.722, 0.783] |
+Two intervals are given for each number, and the second one is the one that
+belongs to this task. Whole taxa are held out, so two sequences from the same
+taxon are not two independent observations: resampling rows treats them as if
+they were and comes out about three times too narrow. Measured on this task,
+not assumed. Both are here because the narrower one is what most papers print.
 
-Counting still wins, so counting is what the API serves for placement, and every
-answer says which method produced it.
+| on 300 bases | AUC | over rows | over taxa |
+|---|---|---|---|
+| 4-mer counting | **0.776** | [0.747, 0.807] | [0.694, 0.865] |
+| EH14 X | 0.753 | [0.722, 0.783] | [0.646, 0.857] |
 
-Two choices behind those numbers move them more than the model does, so they are
-worth stating. Whole taxa are held out, never random rows. And the baseline
-compares against one centroid per group, not against the nearest single
+Counting scores higher and the intervals overlap, so this measurement does not
+separate the two. That is what we say now. An earlier version of this file said
+"counting still wins", and its own interval did not support that: [0.722, 0.783]
+contains 0.776. Over taxa the overlap is wide, and we can put a number on how
+wide. The interval would have to be 4.4 times narrower before 0.776 fell outside
+it.
+
+Counting is still what the API serves for placement, because it is simpler and
+nothing we have measured says to change it, and every answer says which method
+produced it.
+
+One more number that bounds the test rather than the model: 34 of the 40
+held-out taxa are represented among the 400 novel sequences drawn. That is the
+width of the test, and it is not the same as the width of the held-out set.
+
+One more choice behind those numbers moves them more than the model does. The
+baseline compares against one centroid per group, not against the nearest single
 reference sequence: the nearest single sequence rewards a query that happens to
 resemble one odd record, and gives a large group more chances to win by being
 large.
