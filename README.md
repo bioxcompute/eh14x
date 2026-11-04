@@ -124,6 +124,24 @@ narrower at 300 bases, and 3.8 times narrower at 512, before the counting score
 fell outside it. Over rows it would take only 1.3 and 1.1, which is the other
 reason the unit matters: on the wrong unit this looks like a near miss.
 
+A sharper test than two separate intervals is possible here, and it was not
+being run. Both methods see exactly the same sequences in the same order, which
+is checked per position rather than assumed, so the difference itself can be
+resampled. Two separate intervals each carry the full sampling noise, and that
+noise is shared between the two methods; resampling the difference removes it.
+Paired over taxa, the difference is -0.024 [-0.076, +0.026] at 300 bases and
+-0.026 [-0.092, +0.035] at 512, and the model scores higher in about a quarter
+of 2000 resamples. Zero sits inside both intervals, so the sharper test says the
+same thing as the wider one: this measurement does not separate the two.
+
+The floor of that test was measured too, because a test that always finds
+something finds nothing. Two genuinely different baselines whose scores differ
+by 0.001 give a difference interval that contains zero, and one that differs by
+0.005 does not, so the resolution on this task is about 0.005. All of these
+numbers are at 400 sequences per side for both methods: a baseline measured on a
+different number of sequences has a different interval width, and the width is
+what decides whether anything is separated.
+
 Counting is still what the API serves for placement, because it is simpler and
 nothing we have measured says to change it, and every answer says which method
 produced it.
