@@ -105,12 +105,24 @@ not assumed. Both are here because the narrower one is what most papers print.
 | 4-mer counting | **0.776** | [0.747, 0.807] | [0.694, 0.865] |
 | EH14 X | 0.753 | [0.722, 0.783] | [0.646, 0.857] |
 
-Counting scores higher and the intervals overlap, so this measurement does not
-separate the two. That is what we say now. An earlier version of this file said
-"counting still wins", and its own interval did not support that: [0.722, 0.783]
-contains 0.776. Over taxa the overlap is wide, and we can put a number on how
-wide. The interval would have to be 4.4 times narrower before 0.776 fell outside
-it.
+| on 512 bases | AUC | over rows | over taxa |
+|---|---|---|---|
+| 4-mer counting | **0.823** | [0.796, 0.853] | [0.746, 0.901] |
+| EH14 X | 0.797 | [0.765, 0.825] | [0.692, 0.894] |
+
+More context is easier for both methods, so a model read at one length may only
+be compared with a baseline measured at that same length. Both lengths are here
+because the published comparisons against other models were run at 300 bases.
+
+Counting scores higher at both lengths and the intervals overlap at both, so
+this measurement does not separate the two. That is what we say now. An earlier
+version of this file said "counting still wins", and its own interval did not
+support that: [0.722, 0.783] contains 0.776.
+
+How wide is the overlap? Over taxa the interval would have to be 4.4 times
+narrower at 300 bases, and 3.8 times narrower at 512, before the counting score
+fell outside it. Over rows it would take only 1.3 and 1.1, which is the other
+reason the unit matters: on the wrong unit this looks like a near miss.
 
 Counting is still what the API serves for placement, because it is simpler and
 nothing we have measured says to change it, and every answer says which method
