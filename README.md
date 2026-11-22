@@ -210,7 +210,8 @@ ships.
 ```bibtex
 @software{eh14x,
   title  = {EH14 X: a sequence model for the named and the unnamed},
-  author = {{BioX}},
+  organization = {bioX},
+  author = {Snooij, Niels Karel},
   year   = {2026},
   url    = {https://bioxcompute.com}
 }

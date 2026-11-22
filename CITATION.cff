@@ -3,7 +3,8 @@ title: "EH14 X: a sequence model for the named and the unnamed"
 message: "If you use this model or these probes, please cite it and quote the release string that came with your answers."
 type: software
 authors:
-  - name: "bioX"
-    website: "https://bioxcompute.com"
+  - family-names: "Snooij"
+    given-names: "Niels Karel"
+    affiliation: "bioX"
 url: "https://bioxcompute.com"
 license: Apache-2.0
