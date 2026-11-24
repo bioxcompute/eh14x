@@ -170,7 +170,13 @@ reference sequence: the nearest single sequence rewards a query that happens to
 resemble one odd record, and gives a large group more chances to win by being
 large.
 
-The evaluation set is available on request.
+The evaluation set is published. **[dark-taxa-novelty
+v1.0](https://github.com/bioxcompute/dark-taxa-novelty)** is the frozen split:
+1,760 sequences, forty whole taxa held out, CC-BY 4.0, with the baseline in one
+numpy file so the row above can be reproduced before anyone tries to beat it.
+Measured there, the baseline reaches 0.7741 on full reads, 0.7578 at 512 bases
+and 0.7329 at 300. Those are its own forty held-out taxa and not the forty in
+the table above, so the two sets of numbers are not interchangeable.
 
 ## Dataset
 
