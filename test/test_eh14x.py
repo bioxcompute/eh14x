@@ -57,25 +57,43 @@ def test_conservation_shape(c: Client) -> bool:
                     len(cons) == r["length"], f"{len(cons)} for {r['length']}")
 
 
-def test_variant(c: Client) -> bool:
-    r = c.variant("chr17", 43092919, "G", "A", gene="BRCA1")
-    v = r["variants"][0]
-    return geslaagd("a variant scores and carries a release",
-                    "score" in v and v.get("model", "").startswith("EH14 X"),
-                    f"{v.get('score')}  {v.get('model')}")
+def test_chimera(c: Client) -> bool:
+    """The one task where this model beats the tool people actually use.
 
-
-def test_reference_check(c: Client) -> bool:
-    """A wrong reference base must be refused, not scored anyway.
-
-    This check catches a wrong assembly or an off-by-one coordinate before it
-    becomes a result someone believes, so it is worth testing that it is still
-    there.
+    A read, a score, and the comparison that belongs with it. If the numbers
+    stop travelling with the answer, this test says so.
     """
-    r = c.variants([{"chrom": "chr17", "pos": 43092919, "ref": "T", "alt": "C"}])
-    v = r["variants"][0]
-    return geslaagd("a wrong reference base is refused", "error" in v,
-                    v.get("error", "it was scored anyway")[:52])
+    seq = ("ACCTGGTTGATCCTGCCAGTAGTCATATGCTTGTCTCAAAGATTAAGCCATGCATGTCTAAGT"
+           "ACGCACGGCCGGTACAGTGAAACTGCGAATGGCTCATTAAATCAGTTATCGTTTATTTGATAG"
+           "TACCTTACTACATGGATAACCGTGGTAATTCTAGAGCTAATACATGCTTAAAATCTCGACCCT"
+           "TTGGAAGAGATGTATTTATTAGATAAAAAATCAATGCCCTTCGGGGCTCCTTGGTGATTCATG"
+           "ATAACTTCTCGAATCGCATGGCCTTGTGCTGGCGATGGTTCATTCAAATTTCTGCCCTATCA")
+    r = c.chimera(seq)
+    row = (r.get("results") or [{}])[0]
+    ok = (row.get("call") in ("real", "chimera")
+          and isinstance(r.get("auc_held_out_groups"), (int, float))
+          and "9442" in str(r.get("versus_uchime", "")))
+    return geslaagd("a read is called, with its AUC and the UCHIME comparison",
+                    ok, f"{row.get('call')}  {row.get('score')}  "
+                        f"auc {r.get('auc_held_out_groups')}")
+
+
+def test_withdrawn_route_stays_withdrawn(c: Client) -> bool:
+    """The variant route was withdrawn on 26 September 2026.
+
+    EH14 X scores 0.3687 on variant effect, below the 0.5 of guessing, and two
+    different models once carried one name on that route. It must answer 410
+    and not quietly start working again, because a route that comes back
+    without a measurement behind it is worse than one that is gone.
+    """
+    try:
+        c._post("/v1/variant/score", {"chrom": "chr17", "pos": 43092919,
+                                      "ref": "G", "alt": "A"})
+    except Exception as exc:
+        weg = "410" in str(exc) or "withdrawn" in str(exc).lower()
+        return geslaagd("the variant route still answers 410", weg, str(exc)[:52])
+    return geslaagd("the variant route still answers 410", False,
+                    "it answered instead of refusing")
 
 
 def test_design(c: Client) -> bool:
@@ -106,7 +124,8 @@ if __name__ == "__main__":
         raise SystemExit(f"{exc}")
 
     tests = [test_reachable, test_real_beats_shuffled, test_conservation_shape,
-             test_variant, test_reference_check, test_design, test_design_refuses]
+             test_chimera, test_withdrawn_route_stays_withdrawn,
+             test_design, test_design_refuses]
     uit = []
     for t in tests:
         try:

@@ -2,7 +2,7 @@
 
 EH14 X reads biological sequence: the human genome, marker genes, and
 environmental DNA from seawater and sediment. It scores how expected each base
-of a sequence is, judges what a single changed letter does, places a sequence
+of a sequence is, tells a real read from a PCR artefact, places a sequence
 that no database has a name for, and designs detection probes against a
 pathogen.
 
@@ -10,7 +10,7 @@ pathogen.
 
     c = Client()                      # reads BIOX_API_KEY from the environment
     c.score("ATGCTTGTCTCAAAGATTAAGCC")
-    c.variant("chr17", 43092919, "G", "A")
+    c.chimera(read)                   # 250 to 332 bases
     c.design("Trypanosoma")
 
 Request a key at https://bioxcompute.com/key

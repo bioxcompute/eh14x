@@ -54,40 +54,30 @@ class Client:
         high where the position is hard to vary. Those are the stretches that
         stayed the same across species, which is where a primer binds.
         """
-        return self._post("/v1/noctua/score",
+        return self._post("/v1/sequence/score",
                           {"sequence": sequence, "place": place,
                            "per_base": per_base})
 
     def score_many(self, sequences: list[str]) -> dict[str, Any]:
         """Up to 200 sequences in one call."""
-        return self._post("/v1/noctua/score", {"sequences": list(sequences)})
+        return self._post("/v1/sequence/score", {"sequences": list(sequences)})
 
-    def variant(self, chrom: str, pos: int, ref: str, alt: str,
-                gene: str | None = None) -> dict[str, Any]:
-        """How likely is this single-letter change to cause disease?
+    def chimera(self, sequence: str | None = None,
+                sequences: list[str] | None = None) -> dict[str, Any]:
+        """Is this barcode read a real organism, or a PCR artefact?
 
-        Research use. It puts candidates in order; it does not diagnose anyone.
+        Give one `sequence` or up to 200 `sequences`. Every answer carries the
+        AUC on held-out taxa, the floor, and the comparison against UCHIME, so
+        the number travels with the call instead of living in a README.
+
+        The head was trained on 250 to 332 bases. A read outside that range
+        comes back refused rather than scored.
         """
-        body = {"chrom": chrom, "pos": int(pos), "ref": ref, "alt": alt}
-        if gene:
-            body["gene"] = gene
-        return self._post("/v1/atlas/score", body)
-
-    def variants(self, rows: list[dict[str, Any]]) -> dict[str, Any]:
-        """A whole list of variants in one call."""
-        return self._post("/v1/atlas/score", {"variants": list(rows)})
-
-    def explain(self, chrom: str, pos: int, ref: str, alt: str,
-                gene: str | None = None) -> dict[str, Any]:
-        """The same variant, with what the model reacted to.
-
-        This matters more than the score. A number nobody can check is worth
-        very little; this one you can argue with.
-        """
-        body = {"chrom": chrom, "pos": int(pos), "ref": ref, "alt": alt}
-        if gene:
-            body["gene"] = gene
-        return self._post("/v1/atlas/explain", body)
+        if (sequence is None) == (sequences is None):
+            raise ValueError("give either `sequence` or `sequences`")
+        body = {"sequence": sequence} if sequence is not None \
+            else {"sequences": list(sequences or [])}
+        return self._post("/v1/sequence/chimera", body)
 
     def generate(self, sequence: str = "", num_tokens: int = 200,
                  temperature: float = 0.9, top_k: int = 4,
@@ -98,7 +88,7 @@ class Client:
                 "top_p": float(top_p)}
         if organism:
             body["organism"] = organism
-        return self._post("/v1/noctua/generate", body)
+        return self._post("/v1/sequence/generate", body)
 
     def design(self, genus: str | None = None, rounds: int = 6) -> dict[str, Any]:
         """Write a detection probe for a pathogen.
@@ -109,7 +99,7 @@ class Client:
         body: dict[str, Any] = {"rounds": int(rounds)}
         if genus:
             body["genus"] = genus
-        return self._post("/v1/noctua/design", body)
+        return self._post("/v1/design", body)
 
     def targets(self) -> list[dict[str, Any]]:
         """The pathogens `design` will answer for."""

@@ -3,9 +3,9 @@
 A model that reads biological sequence: the human genome, marker genes, and
 environmental DNA from seawater and sediment.
 
-It scores how expected each base of a sequence is, judges what a single changed
-letter does to a person, places a sequence that no database has a name for, and
-designs detection probes against a pathogen.
+It scores how expected each base of a sequence is, tells a real read from a
+PCR artefact, places a sequence that no database has a name for, and designs
+detection probes against a pathogen.
 
 Access is by request: **[bioxcompute.com/request](https://bioxcompute.com/request)**
 
@@ -33,13 +33,20 @@ c = Client()
 r = c.score("ATGCTTGTCTCAAAGATTAAGCCATGCATGTCTCAGTATAAGCTTTTACATGGCGAAACT")
 print(r["perplexity"], r["conservation"][:10])
 
-# What does one changed letter do? Research use: it orders candidates.
-print(c.variant("chr17", 43092919, "G", "A", gene="BRCA1"))
-print(c.explain("chr17", 43092919, "G", "A"))
+# Real organism, or two things the PCR welded together? The head was trained
+# on 250 to 332 bases and refuses a read outside that range. Every answer
+# carries its own AUC, its floor, and the comparison against UCHIME.
+q = c.chimera(read)                     # one 18S read, 250 to 332 bases
+print(q["results"][0]["call"], q["versus_uchime"])
 
 # Write a detection probe. What comes back is a candidate, not an assay.
 print(c.design("Trypanosoma"))
 ```
+
+The variant route this client used to carry was withdrawn on 26 September
+2026. EH14 X scores 0.3687 on variant effect, below the 0.5 of guessing, and
+two different models once answered on that one name. It returns 410 rather than
+404, because it existed and was taken away on purpose.
 
 More in [`examples/`](examples/). A set of basic checks that the model is
 reachable and behaving is in [`test/`](test/):
@@ -50,11 +57,18 @@ python test/test_eh14x.py
 
 ## What it does
 
-**Ranks variants nobody has ruled on.** Sequence a person and you get hundreds
-of single-letter differences with no verdict attached. There are more candidates
-than there are hours to spend on them, so the work is deciding which ones to
-look at first. The model puts them in order and then says what it reacted to,
-so a clinician can disagree on evidence.
+**Tells a real read from a PCR artefact.** Amplify DNA out of seawater and some
+of what comes back is two half-made products welded together. Those welds look
+like new organisms, and a pipeline that keeps them reports diversity that is not
+there. This is the one task here where the model beats the tool people actually
+use: 0.9735 against 0.9442 for UCHIME in vsearch 2.32 on the same set, a
+difference of 0.0293 with interval [0.0208, 0.0385].
+
+That comparison ran at equal abundance and abskew 1.0, so both methods saw only
+the letters. In a real sample UCHIME also has the abundance of every read, and
+we do not model it, so this beats UCHIME on the letters and that is a narrower
+claim than beating UCHIME. Our own 4-mer baseline scored 0.4989 here, which
+means that baseline was too easy and the honest comparison is the one above.
 
 **Places sequence that has no name.** Take a litre of seawater and sequence what
 is in it. Below five hundred metres, most of what comes back matches nothing
